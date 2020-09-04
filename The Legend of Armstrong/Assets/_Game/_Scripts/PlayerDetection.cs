@@ -10,7 +10,7 @@ public class PlayerDetection : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             _parent.alerted = true;
-            if (_parent.enemyType != EnemyType.RANGED) _parent.EnemyAnimator.Play("EnemyMove");
+            if (_parent.enemyType != EnemyType.RANGED) _parent.EnemyAnimator.Play("StaticEnemyMove");
 
             _parent.transform.LookAt(other.transform.position);
             _parent.transform.Rotate(new Vector3(0, 90, 0), Space.Self);
