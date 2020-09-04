@@ -724,7 +724,27 @@ PrefabInstance:
     - target: {fileID: 4411485931132470743, guid: 2aa0480817aa45d4facce752d4ce99e4,
         type: 3}
       propertyPath: jumpForce
-      value: 175
+      value: 200
+      objectReference: {fileID: 0}
+    - target: {fileID: 4411485931132470743, guid: 2aa0480817aa45d4facce752d4ce99e4,
+        type: 3}
+      propertyPath: bowTransform
+      value: 
+      objectReference: {fileID: 1976275380}
+    - target: {fileID: 4411485931132470743, guid: 2aa0480817aa45d4facce752d4ce99e4,
+        type: 3}
+      propertyPath: projectileSpeed
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 4411485931132470743, guid: 2aa0480817aa45d4facce752d4ce99e4,
+        type: 3}
+      propertyPath: movementSpeed
+      value: 200
+      objectReference: {fileID: 0}
+    - target: {fileID: 4411485931132470743, guid: 2aa0480817aa45d4facce752d4ce99e4,
+        type: 3}
+      propertyPath: jumpChargeDuration
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 9132033055546920834, guid: 2aa0480817aa45d4facce752d4ce99e4,
         type: 3}
@@ -1762,6 +1782,12 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 8996340525511434326, guid: d00cb76d961623a4a87bb5d27f6b592d,
     type: 3}
   m_PrefabInstance: {fileID: 775510767}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &1976275380 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2369763842882773402, guid: 2aa0480817aa45d4facce752d4ce99e4,
+    type: 3}
+  m_PrefabInstance: {fileID: 649152393}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &2042317792
 PrefabInstance:

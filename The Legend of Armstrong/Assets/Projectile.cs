@@ -9,6 +9,7 @@ public class Projectile : MonoBehaviour
     private float projectileSpeed = 0f;
     private int damage = 1;
     public bool isHostile = false;
+    public bool released = false;
 
     public float ProjectileSpeed
     {
@@ -25,16 +26,25 @@ public class Projectile : MonoBehaviour
         set { isHostile = value; }
     }
 
+    public bool Released
+    {
+        set { released = value; }
+    }
+
     // Start is called before the first frame update
     private void Start()
     {
-        Initialize();
+
     }
 
     // Update is called once per frame
     private void Update()
     {
-        
+        if (released)
+        {
+            Debug.Log(projectileSpeed);
+            Initialize(); 
+        }
     }
 
     private void OnTriggerEnter(Collider other)

@@ -24,6 +24,7 @@ public class PlayerController : MonoBehaviour, IDamageable<int>
     private Rigidbody rb = null;
     private CapsuleCollider playerCollider = null;
     private Transform aimTransform = null;
+    public Transform bowTransform;
     private bool isGrounded = false;
     private Vector3 surfacePosition = new Vector3();
     private Quaternion surfaceRotation = new Quaternion();
@@ -36,6 +37,7 @@ public class PlayerController : MonoBehaviour, IDamageable<int>
     private int bombs = 3;
     private float jumpChargeTimer = 0f;
     private bool jumpIsCharging = false;
+    private GameObject projectile;
 
     // Input
     private float inputMove = 0f;
@@ -44,6 +46,7 @@ public class PlayerController : MonoBehaviour, IDamageable<int>
     private bool inputShoot = false;
     private bool inputBomb = false;
     private bool inputShield = false;
+    private bool inputRelease = false;
 
     // Timers
     private float groundCheckTimer = 0f;
@@ -120,7 +123,6 @@ public class PlayerController : MonoBehaviour, IDamageable<int>
         rb = GetComponent<Rigidbody>();
         playerCollider = GetComponentInChildren<CapsuleCollider>();
         aimTransform = transform.Find("Aim");
-
         hp = maxHp;
 
         foreach (Transform child in transform.Find("Aim").transform.Find("Equipment"))
@@ -135,7 +137,8 @@ public class PlayerController : MonoBehaviour, IDamageable<int>
         inputMove = Input.GetAxisRaw("Horizontal");
         inputJump = Input.GetButton("Jump");
         inputGrappleUp = Input.GetButtonUp("Fire2");
-        inputShoot = Input.GetButtonDown("Fire1");
+        inputShoot = Input.GetButton("Fire1");
+        inputRelease = Input.GetButtonUp("Fire1");
         inputBomb = Input.GetButtonDown("Bomb");
         inputShield = Input.GetButton("Shield");
     }
@@ -286,7 +289,7 @@ public class PlayerController : MonoBehaviour, IDamageable<int>
             }
             else
             {
-                equipmentId = (bowDisplayTimer > 0f) ? 0 : 2;
+                equipmentId = (inputShoot) ? 0 : 2;
             }
         }
 
@@ -298,14 +301,24 @@ public class PlayerController : MonoBehaviour, IDamageable<int>
 
     private void Shoot()
     {
-        if (inputShoot && shootTimer <= 0f)
-        {
-            GameObject projectile = Instantiate(projectilePrefab, rb.position, Quaternion.identity);
-            projectile.transform.right = aimTransform.right;
-            projectile.GetComponent<Projectile>().ProjectileSpeed = projectileSpeed;
 
+        if (inputShoot && !inputShield)
+        {
+            if(projectile == null)
+                projectile = Instantiate(projectilePrefab, bowTransform.position, Quaternion.identity, bowTransform);
+            projectile.transform.localPosition = Vector3.zero;
+            projectile.transform.localRotation = Quaternion.identity;
+            projectile.transform.GetChild(2).gameObject.SetActive(false);
+        }
+        if (inputRelease)
+        {
+            projectile.transform.parent = null;
+            projectile.GetComponent<Projectile>().ProjectileSpeed = projectileSpeed;
+            projectile.GetComponent<Projectile>().released = true;
+            projectile.transform.GetChild(2).gameObject.SetActive(true);
             bowDisplayTimer = bowDisplayDuration;
             shootTimer = shootDelay;
+            projectile = null;
         }
 
         bowDisplayTimer -= Time.deltaTime;
