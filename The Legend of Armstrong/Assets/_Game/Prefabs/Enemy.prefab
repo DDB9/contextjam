@@ -43,8 +43,8 @@ GameObject:
   - component: {fileID: 3384512211071896346}
   - component: {fileID: 3384512211071896345}
   - component: {fileID: 7747489394017163122}
-  - component: {fileID: 3384512211071896327}
-  - component: {fileID: 3384512211071896326}
+  - component: {fileID: 239703077809330458}
+  - component: {fileID: 8266648263767081034}
   m_Layer: 0
   m_Name: Unit
   m_TagString: Untagged
@@ -61,7 +61,7 @@ Transform:
   m_GameObject: {fileID: 3384512211071896325}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 5, y: 7, z: 1}
+  m_LocalScale: {x: 0.4, y: 0.4, z: 1}
   m_Children:
   - {fileID: 3384512212288482709}
   m_Father: {fileID: 6126878809212440650}
@@ -106,7 +106,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 2
-  m_Sprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
+  m_Sprite: {fileID: 21300000, guid: 64767efbaa3e8c142913db11d2ad587f, type: 3}
   m_Color: {r: 0.7169812, g: 0, b: 0.22677699, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -129,6 +129,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 98e9bd39cfda9284d92423d6f06d010c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  enemyType: 0
   player: {fileID: 0}
   projectile: {fileID: 2449784643193290898, guid: 69917147959e9b64196ee3265b44a23b,
     type: 3}
@@ -141,43 +142,35 @@ MonoBehaviour:
   ranged: 0
   targetWaypoint: {fileID: 0}
   returnToWaypoint: 0
---- !u!70 &3384512211071896327
-CapsuleCollider2D:
+--- !u!135 &239703077809330458
+SphereCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3384512211071896325}
-  m_Enabled: 1
-  m_Density: 1
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
-  m_Size: {x: 0.2, y: 0.19999999}
-  m_Direction: 0
---- !u!50 &3384512211071896326
-Rigidbody2D:
-  serializedVersion: 4
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.7
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!54 &8266648263767081034
+Rigidbody:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3384512211071896325}
-  m_BodyType: 0
-  m_Simulated: 1
-  m_UseFullKinematicContacts: 0
-  m_UseAutoMass: 0
+  serializedVersion: 2
   m_Mass: 1
-  m_LinearDrag: 0
+  m_Drag: 0
   m_AngularDrag: 0.05
-  m_GravityScale: 0
-  m_Material: {fileID: 0}
+  m_UseGravity: 0
+  m_IsKinematic: 0
   m_Interpolate: 0
-  m_SleepingMode: 1
-  m_CollisionDetection: 0
   m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1 &3384512212288482708
 GameObject:
   m_ObjectHideFlags: 0
@@ -187,8 +180,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3384512212288482709}
-  - component: {fileID: 3384512212288482711}
   - component: {fileID: 3384512212288482710}
+  - component: {fileID: 6393672582128385734}
   m_Layer: 0
   m_Name: DetectionCircle
   m_TagString: Untagged
@@ -210,22 +203,6 @@ Transform:
   m_Father: {fileID: 3384512211071896346}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!58 &3384512212288482711
-CircleCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3384512212288482708}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
-  serializedVersion: 2
-  m_Radius: 0.0001
 --- !u!114 &3384512212288482710
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -238,6 +215,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c72acfbfa1535d140bfd3953e00eddb9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!135 &6393672582128385734
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3384512212288482708}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 1
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1001 &3384512211566090833
 PrefabInstance:
   m_ObjectHideFlags: 0

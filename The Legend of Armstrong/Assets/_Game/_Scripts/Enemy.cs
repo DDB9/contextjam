@@ -4,10 +4,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public enum EnemyType {STATIC, FLYING, RANGED};
-[RequireComponent(typeof(Collider2D))]
+[RequireComponent(typeof(Collider))]
 public class Enemy : MonoBehaviour
 {
     public EnemyType enemyType;
+    public Animator EnemyAnimator;
     public GameObject player;
     public GameObject projectile;
     public Transform[] waypoints;
@@ -42,7 +43,8 @@ public class Enemy : MonoBehaviour
                 break;
 
             case EnemyType.RANGED:
-                if (alerted) ShootPlayer();
+                if (alerted) Invoke("FireBullet", 0.1f);
+                else CancelInvoke();
                 break;
         }
     }
@@ -54,6 +56,8 @@ public class Enemy : MonoBehaviour
         else if (_patrolDirectionRight && transform.position.x >= targetWaypoint.position.x) SwitchWaypoint();
 
         // Move enemy to target waypoint.
+        transform.LookAt(targetWaypoint.position);
+        transform.Rotate(new Vector3(0, 90, 0), Space.Self);
         transform.position = Vector2.MoveTowards(transform.position, targetWaypoint.position, movementSpeed * Time.deltaTime);
     }
     private void SwitchWaypoint()
@@ -75,26 +79,30 @@ public class Enemy : MonoBehaviour
     {
         transform.position = Vector2.MoveTowards(transform.position, player.transform.position, movementSpeed * Time.deltaTime);
     }
-    
-    private void ShootPlayer()
-    {
-        GameObject _bullet = Instantiate(projectile, transform.position, Quaternion.identity);
-        _bullet.GetComponent<Rigidbody2D>().AddForce(transform.forward);
-    }
 
     public void ReturnToWaypoint()
     {
-        if (transform.position == targetWaypoint.position) returnToWaypoint = false;
+        if (transform.position == targetWaypoint.position)
+        {
+            returnToWaypoint = false;
+            EnemyAnimator.StopPlayback();
+            EnemyAnimator.Play("Idle");
+        }
 
         transform.position = Vector2.MoveTowards(transform.position, targetWaypoint.position, movementSpeed * Time.deltaTime);
         transform.rotation = Quaternion.Euler(0, 0, 0);
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    private void OnCollisionEnter(Collision collision)
     {
         // ! Deduct Life
         if (collision.transform.CompareTag("Player"))
             Debug.Log("GAME OVER");
+    }
+
+    private void FireBullet()
+    {
+        GameObject _bullet = Instantiate(projectile, transform.position, Quaternion.identity);
     }
 
 }

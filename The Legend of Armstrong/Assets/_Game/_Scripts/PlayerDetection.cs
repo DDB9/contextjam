@@ -4,18 +4,19 @@ using UnityEngine;
 
 public class PlayerDetection : MonoBehaviour
 {
-    private void OnTriggerStay2D(Collider2D other)
+    private void OnTriggerStay(Collider other)
     {
         Enemy _parent = transform.parent.GetComponent<Enemy>();
         if (other.CompareTag("Player"))
         {
             _parent.alerted = true;
+            _parent.EnemyAnimator.Play("EnemyMove");
 
             _parent.transform.LookAt(other.transform.position);
-            _parent.transform.Rotate(new Vector3(0, -90, 0), Space.Self);
+            _parent.transform.Rotate(new Vector3(0, 90, 0), Space.Self);
         }
     }
-    private void OnTriggerExit2D(Collider2D other)
+    private void OnTriggerExit(Collider other)
     {
         if (other.CompareTag("Player"))
         {
