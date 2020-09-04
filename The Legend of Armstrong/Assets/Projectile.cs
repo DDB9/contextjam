@@ -10,6 +10,7 @@ public class Projectile : MonoBehaviour
     private int damage = 1;
     public bool isHostile = false;
     public bool released = false;
+    public GameObject LightArrowHit;
 
     public float ProjectileSpeed
     {
@@ -51,16 +52,19 @@ public class Projectile : MonoBehaviour
     {
         IDamageable<int> damageable = other.GetComponentInParent<IDamageable<int>>();
         PlayerController player = other.GetComponentInParent<PlayerController>();
+        
         if (damageable != null)
         {
             if ((isHostile && player != null) || (!isHostile && player == null))
             {
+                Instantiate(LightArrowHit, transform.position, transform.rotation);
                 damageable.TakeDamage(damage);
                 Destroy(gameObject);
             }
         }
         else
         {
+            Instantiate(LightArrowHit, transform.position, transform.rotation);
             Destroy(gameObject);
         }
     }

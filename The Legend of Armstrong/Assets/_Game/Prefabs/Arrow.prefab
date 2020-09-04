@@ -92,6 +92,12 @@ PrefabInstance:
       propertyPath: m_Name
       value: Arrow
       objectReference: {fileID: 0}
+    - target: {fileID: 7252964223392029653, guid: c41f5d1808b1eeb4791ad052fb5c8c13,
+        type: 3}
+      propertyPath: LightArrowHit
+      value: 
+      objectReference: {fileID: 7549040462917611862, guid: 7e4ec2120a78cd744a0ea7ba54b1cb1a,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c41f5d1808b1eeb4791ad052fb5c8c13, type: 3}
 --- !u!4 &575284369636788773 stripped
@@ -110,6 +116,11 @@ PrefabInstance:
     - target: {fileID: 4756799505101472928, guid: a7b7485f8a4e87245951d87f3f71ae70,
         type: 3}
       propertyPath: playOnAwake
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4756799505101472928, guid: a7b7485f8a4e87245951d87f3f71ae70,
+        type: 3}
+      propertyPath: scalingMode
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4756799505101472929, guid: a7b7485f8a4e87245951d87f3f71ae70,
@@ -175,17 +186,17 @@ PrefabInstance:
     - target: {fileID: 4756799505101472931, guid: a7b7485f8a4e87245951d87f3f71ae70,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 1.9220523
+      value: 1.3012102
       objectReference: {fileID: 0}
     - target: {fileID: 4756799505101472931, guid: a7b7485f8a4e87245951d87f3f71ae70,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 1.9220523
+      value: 1.3012102
       objectReference: {fileID: 0}
     - target: {fileID: 4756799505101472931, guid: a7b7485f8a4e87245951d87f3f71ae70,
         type: 3}
       propertyPath: m_LocalScale.z
-      value: 1.9220523
+      value: 1.3012102
       objectReference: {fileID: 0}
     - target: {fileID: 4756799505101472958, guid: a7b7485f8a4e87245951d87f3f71ae70,
         type: 3}
@@ -202,10 +213,20 @@ PrefabInstance:
       propertyPath: playOnAwake
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 4756799505668244501, guid: a7b7485f8a4e87245951d87f3f71ae70,
+        type: 3}
+      propertyPath: scalingMode
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4756799507085308789, guid: a7b7485f8a4e87245951d87f3f71ae70,
         type: 3}
       propertyPath: playOnAwake
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4756799507085308789, guid: a7b7485f8a4e87245951d87f3f71ae70,
+        type: 3}
+      propertyPath: scalingMode
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a7b7485f8a4e87245951d87f3f71ae70, type: 3}

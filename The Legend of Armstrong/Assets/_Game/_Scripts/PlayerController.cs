@@ -18,6 +18,8 @@ public class PlayerController : MonoBehaviour, IDamageable<int>
     public float bombSpeed = 1f;
     public GameObject projectilePrefab = null;
     public GameObject bombPrefab = null;
+    public ParticleSystem lightArrowShoot;
+    public GameObject jumpDirectionSprite;
     public float jumpChargeShakeIntensity = 1f;
 
     // Initialize the private variables
@@ -163,10 +165,12 @@ public class PlayerController : MonoBehaviour, IDamageable<int>
     {
         if (inputJump)
         {
+            jumpDirectionSprite.SetActive(true);
             if (!jumpIsCharging)
             {
                 jumpChargeTimer = jumpChargeDuration;
                 jumpIsCharging = true;
+                
             }
 
             float shakeIntensity = jumpChargeShakeIntensity * (1f - (jumpChargeTimer / jumpChargeDuration));
@@ -179,6 +183,7 @@ public class PlayerController : MonoBehaviour, IDamageable<int>
         else
         {
             transform.Find("Sprite").localPosition = new Vector3();
+            jumpDirectionSprite.SetActive(false);
         }
 
         if (!inputJump && jumpIsCharging && FindSurface(aimTransform.right))
@@ -319,6 +324,7 @@ public class PlayerController : MonoBehaviour, IDamageable<int>
             bowDisplayTimer = bowDisplayDuration;
             shootTimer = shootDelay;
             projectile = null;
+            lightArrowShoot.Play();
         }
 
         bowDisplayTimer -= Time.deltaTime;
