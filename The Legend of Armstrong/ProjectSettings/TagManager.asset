@@ -5,6 +5,8 @@ TagManager:
   serializedVersion: 2
   tags:
   - Flying Enemy Waypoint
+  - LaserSpawn
+  - Shield
   layers:
   - Default
   - TransparentFX
@@ -18,10 +20,10 @@ TagManager:
   - CursorCollider
   - Solid
   - Projectile
-  - 
-  - 
-  - 
-  - 
+  - AlignmentCollider
+  - Sword
+  - Shield
+  - Laser
   - 
   - 
   - 

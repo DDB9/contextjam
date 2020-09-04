@@ -4,8 +4,10 @@ using UnityEngine;
 
 public class CameraManager : MonoBehaviour
 {
+    public Vector2 cameraZoom = new Vector2();
     public int TargetRoom;
     public float CameraTransitionSpeed = 4f;
+    private Transform player;
 
     [SerializeField]
     private List<int> RoomHistory = new List<int>();
@@ -13,11 +15,13 @@ public class CameraManager : MonoBehaviour
     private void Start()
     {
         RoomHistory.Add(0);
+        player = GameObject.Find("Player").transform;
     }
+
     private void Update()
     {
         // Set target room for the camera to adjust position.
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (/*Input.GetKeyDown(KeyCode.Space)*/ false)
         {
             TargetRoom++;
             if (TargetRoom >= DungeonManager.Instance.Rooms.Count) TargetRoom = 0;
@@ -36,6 +40,20 @@ public class CameraManager : MonoBehaviour
         }
 
         DetermineTargetRoom();
+        CameraOrientation();
+
+        float angle = Mathf.Abs(transform.eulerAngles.z);
+        if (angle <= 180f)
+        {
+            float difference = 1f - (Mathf.Abs(transform.eulerAngles.z - 90f) / 90f);
+            GetComponent<Camera>().orthographicSize = Mathf.Lerp(cameraZoom.x, cameraZoom.y, difference);
+        }
+        else
+        {
+            //float difference = 1f - (Mathf.Abs(transform.eulerAngles.z)
+            float difference = 1f - (Mathf.Abs((transform.eulerAngles.z - 180f) - 90f) / 90f);
+            GetComponent<Camera>().orthographicSize = Mathf.Lerp(cameraZoom.x, cameraZoom.y, difference);
+        }
     }
 
     /// <summary>
@@ -59,10 +77,11 @@ public class CameraManager : MonoBehaviour
     /// <param name="pTargetRoom">Room to move camera to.</param>
     private void PlaceCamera(GameObject pTargetRoom)
     {
-        GetComponent<Camera>().transform.position = Vector3.Lerp(GetComponent<Camera>().transform.position,
-                                                                 new Vector3(pTargetRoom.transform.position.x,
-                                                                             pTargetRoom.transform.position.y,
-                                                                             -10),
-                                                                 Time.deltaTime * CameraTransitionSpeed);
+        GetComponent<Camera>().transform.position = Vector3.Lerp(GetComponent<Camera>().transform.position, pTargetRoom.transform.position + new Vector3(0,0,-5), Time.deltaTime * CameraTransitionSpeed);
+    }
+
+    private void CameraOrientation()
+    {
+        transform.rotation = Quaternion.Slerp(transform.rotation, player.rotation, Time.deltaTime * CameraTransitionSpeed);
     }
 }

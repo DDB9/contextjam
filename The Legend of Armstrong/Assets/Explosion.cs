@@ -17,12 +17,7 @@ public class Explosion : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (destroyTimer <= 0f)
-        {
-            Destroy(gameObject);
-        }
 
-        destroyTimer--;
     }
 
     private void OnTriggerStay(Collider other)
@@ -34,7 +29,6 @@ public class Explosion : MonoBehaviour
             if (player == null)
             {
                 damageable.TakeDamage(damage);
-                Destroy(gameObject);
             }
             else
             {
@@ -42,5 +36,13 @@ public class Explosion : MonoBehaviour
                 player.Blast(direction, force);
             }
         }
+
+        Destructable destructable = other.GetComponent<Destructable>();
+        if (destructable != null)
+        {
+            Destroy(other.gameObject);
+        }
+
+        Destroy(gameObject);
     }
 }
