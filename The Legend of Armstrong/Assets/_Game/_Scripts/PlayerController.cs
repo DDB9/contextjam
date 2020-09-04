@@ -203,7 +203,7 @@ public class PlayerController : MonoBehaviour, IDamageable<int>
 
             Vector3 direction = aimTransform.right;
             float percentage = 1f - (jumpChargeTimer / jumpChargeDuration);
-            float step = (jumpForce * percentage) * Time.deltaTime;
+            float step = (jumpForce * (0.1f + 0.9f * percentage) * Time.deltaTime);
             rb.velocity = (direction * step);
 
             groundCheckTimer = groundCheckDelay;
