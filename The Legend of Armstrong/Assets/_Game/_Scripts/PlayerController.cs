@@ -1,40 +1,32 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class PlayerController : MonoBehaviour
 {
     // Initialize the public variables
     public float movementSpeed = 250f;
-    public Vector2 jumpForce = new Vector2(50f, 150f);
-    public float jumpChargeDuration = 5f;
-    public float jumpTiltForce = 100f;
+    public float movementSmoothing = .1f;
+    public float jumpForce = 100f;
+    public float groundCheckDelay = .5f;
 
     // Initialize the private variables
     private Rigidbody rb = null;
-    private bool isGrounded = true;
-    private bool jumpIsCharging = false;
-    private float jumpChargeTimer = 0f;
-    private float targetJumpForce = 0f;
-    private float jumpChargePercentage = 0f;
+    private CapsuleCollider playerCollider = null;
     private Transform aimTransform = null;
-    public bool magneticBootsActive = false;
+    private bool isGrounded = false;
+    Vector3 surfacePosition = new Vector3();
+    Quaternion surfaceRotation = new Quaternion();
+    Quaternion preJumpRotation = new Quaternion();
+    float distanceToSurface = 0f;
 
-    private Vector3 targetVector = new Vector3();
-    private Vector3 startVector = new Vector3();
-    private Quaternion targetRotation = new Quaternion();
-    private float impactDistance = 0f;
-    private float impactRaycastLength = 6f;
-
-    // Input variables
+    // Input
     private float inputMove = 0f;
     private bool inputJump = false;
-    private bool inputMagneticBoots = false;
 
-    public bool JumpIsCharging
-    {
-        get { return jumpIsCharging; }
-    }
+    // Timers
+    private float groundCheckTimer = 0f;
 
     // Start is called before the first frame update
     private void Start()
@@ -46,18 +38,13 @@ public class PlayerController : MonoBehaviour
     private void Update()
     {
         GetInput();
+        Aim();
+        CheckIfGrounded();
         UpdateConstraints();
-        UpdateUI();
-        UpdateAimTransform();
 
         if (!isGrounded)
         {
-            if (magneticBootsActive)
-            {
-                AlignToSurface();
-            }
-
-            ToggleMagneticBoots();
+            AlignToSurface();
         }
     }
 
@@ -75,6 +62,7 @@ public class PlayerController : MonoBehaviour
     private void Initialize()
     {
         rb = GetComponent<Rigidbody>();
+        playerCollider = GetComponentInChildren<CapsuleCollider>();
         aimTransform = transform.Find("Aim");
     }
 
@@ -83,7 +71,93 @@ public class PlayerController : MonoBehaviour
     {
         inputMove = Input.GetAxisRaw("Horizontal");
         inputJump = Input.GetButton("Jump");
-        inputMagneticBoots = Input.GetButtonDown("MagneticBoots");
+    }
+
+    // Rotate the aim transform to point towards the mouse cursor
+    private void Aim()
+    {
+        Vector3 direction = (GameManager.Instance._Cursor.transform.position - transform.position).normalized;
+        aimTransform.right = direction;
+    }
+
+    // Move the player controller along the current surface
+    private void Move()
+    {
+        float step = movementSpeed * Time.deltaTime;
+        Vector3 newVel = transform.right * (inputMove * step);
+        rb.velocity = Vector3.Lerp(rb.velocity, newVel, movementSmoothing);
+    }
+
+    // Jump towards the mouse cursor
+    private void Jump()
+    {
+        if (inputJump && FindSurface())
+        {
+            preJumpRotation = transform.rotation;
+
+            Vector3 direction = aimTransform.right;
+            float step = jumpForce * Time.deltaTime;
+            rb.velocity = (direction * step);
+
+            groundCheckTimer = groundCheckDelay;
+        }
+    }
+
+    // Find a surface to jump to (return true if one is found)
+    private bool FindSurface()
+    {
+        Vector3 direction = aimTransform.right;
+        RaycastHit hit = new RaycastHit();
+        LayerMask mask = LayerMask.GetMask("Solid");
+        bool hitSurface = (Physics.Raycast(rb.position, direction, out hit, Mathf.Infinity, mask));
+
+        if (hitSurface)
+        {
+            Vector3 dirToPlayer = (rb.position - hit.point).normalized;
+            surfacePosition = hit.point + (dirToPlayer * (playerCollider.height / 2f));
+            surfaceRotation = Quaternion.FromToRotation(transform.up, hit.normal) * transform.rotation;
+            distanceToSurface = Vector3.Distance(rb.position, surfacePosition);
+
+            float angle = Quaternion.Angle(transform.rotation, surfaceRotation);
+            if (angle == 180f)
+            {
+                surfaceRotation = Quaternion.Euler(0f, 0f, transform.eulerAngles.z + 180f);
+            }
+        }
+
+        return hitSurface;
+    }
+
+    // Align the player to the next surface
+    private void AlignToSurface()
+    {
+        float distance = Vector3.Distance(rb.position, surfacePosition);
+        float percentage = Mathf.Clamp(1f - (distance / distanceToSurface), 0f, 1f);
+        transform.rotation = Quaternion.Slerp(preJumpRotation, surfaceRotation, percentage);
+    }
+
+    // Check if the player is currently grounded
+    private void CheckIfGrounded()
+    {
+        if (groundCheckTimer <= 0f)
+        {
+            Vector3 direction = -transform.up;
+            float range = (playerCollider.height / 2f) * 1.1f;
+            LayerMask mask = LayerMask.GetMask("Solid");
+            bool hitSurface = (Physics.Raycast(rb.position, direction, range, mask));
+
+            if (hitSurface)
+            {
+                transform.rotation = surfaceRotation;
+            }
+
+            isGrounded = hitSurface;
+        }
+        else
+        {
+            isGrounded = false;
+            groundCheckTimer -= Time.deltaTime;
+        }
     }
 
     // Update the rigidbody constraints
@@ -91,111 +165,11 @@ public class PlayerController : MonoBehaviour
     {
         if (isGrounded)
         {
-            rb.constraints = RigidbodyConstraints.FreezeRotation;
+            rb.constraints = (RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePositionZ);
         }
         else
         {
-            rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezePositionZ;
-        }
-    }
-
-    // Move the character horizontally (relative to its orientation)
-    private void Move()
-    {
-        float step = movementSpeed * Time.deltaTime;
-        Vector3 newVel = transform.right * (inputMove * step);
-        rb.velocity = newVel;
-    }
-
-    // Jump away from the current surface
-    private void Jump()
-    {
-        if (inputJump)
-        {
-            if (!jumpIsCharging)
-            {
-                jumpChargeTimer = jumpChargeDuration;
-                jumpIsCharging = true;
-            }
-
-            jumpChargePercentage = 1f - (jumpChargeTimer / jumpChargeDuration);
-            targetJumpForce = Mathf.Lerp(jumpForce.x, jumpForce.y, jumpChargePercentage);
-            jumpChargeTimer -= Time.deltaTime;
-        }
-
-        if ((!inputJump || targetJumpForce == jumpForce.y) && jumpIsCharging)
-        {
-            isGrounded = false;
-            UpdateConstraints();
-
-            float step = targetJumpForce * Time.deltaTime;
-            rb.AddForce(aimTransform.right * step, ForceMode.Impulse);
-
-            step = jumpTiltForce * Time.deltaTime;
-            Vector3 torque = new Vector3(0f, 0f, (jumpChargePercentage * step) * Mathf.Sign(-aimTransform.right.x));
-            rb.AddTorque(torque, ForceMode.Impulse);
-
-            jumpIsCharging = false;
-        }
-    }
-
-    // Update the UI with the current player data
-    private void UpdateUI()
-    {
-        GameManager.Instance.UiManager.JumpChargeSlider.value = jumpChargePercentage;
-    }
-
-    // Update the direction of the aim transform to point towards the mouse cursor
-    private void UpdateAimTransform()
-    {
-        aimTransform.right = (GameManager.Instance._Cursor.transform.position - transform.position).normalized;
-    }
-
-    private void AlignToSurface()
-    {
-        RaycastHit[] hits;
-
-        if (rb.velocity.magnitude > 0)
-        {
-            hits = Physics.RaycastAll(transform.position - transform.up, rb.velocity.normalized, impactRaycastLength);
-
-            if (hits.Length == 0)
-            {
-                startVector = transform.up;
-            }
-            for (int i = 0; i < hits.Length; i++)
-            {
-                RaycastHit hit = hits[i];
-
-                if (hits[i].transform.tag == "Level")
-                {
-                    targetVector = hits[i].normal;
-                    impactDistance = hits[i].distance / impactRaycastLength;
-                    Orientation(targetVector, impactDistance, startVector, hits[i].point);
-                }
-            }
-        }
-    }
-
-    private void Orientation(Vector3 targetVector, float distance, Vector3 startVector, Vector3 targetPoint)
-    {
-        transform.up = Vector3.Slerp(startVector, targetVector, (1 - distance));
-        float distToTarget = Vector3.Distance(transform.position, targetPoint);
-        if (distToTarget <= 1.2f)
-        {
-            transform.up = targetVector;
-            magneticBootsActive = false;
-            isGrounded = true;
-        }
-
-        Debug.Log(distToTarget);
-    }
-
-    private void ToggleMagneticBoots()
-    {
-        if (inputMagneticBoots)
-        {
-            magneticBootsActive = !magneticBootsActive;
+            rb.constraints = (RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezePositionZ);
         }
     }
 }

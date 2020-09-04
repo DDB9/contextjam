@@ -24,7 +24,38 @@ public class Orientation : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        RaycastHit[] hits;                
         
+        if (rb.velocity.magnitude > 0)
+        {   
+            hits = Physics.RaycastAll(transform.position - transform.up, rb.velocity.normalized, impactRaycastLength);
+
+            if (hits.Length == 0)
+            {
+                startVector = transform.up;
+            }
+            for (int i = 0; i < hits.Length; i++)
+            {
+                RaycastHit hit = hits[i];
+
+                if (hits[i].transform.tag == "Level")
+                {                    
+                    color = Color.green;
+                    targetVector = hits[i].normal;
+                    impactDistance = hits[i].distance / impactRaycastLength;    
+                    Debug.Log(impactDistance);
+                    Orientatie(targetVector, impactDistance, startVector);
+                    Debug.DrawLine(hits[i].point, hits[i].point + hits[i].normal * 2f, Color.blue);
+                }
+                else
+                {
+                    color = Color.red;
+                    
+                }
+            }
+            Debug.DrawLine(transform.position - transform.up, transform.position - transform.up + rb.velocity.normalized * impactRaycastLength, color);
+
+        }
     }
 
     private void Orientatie(Vector3 targetVector, float distance, Vector3 startVector)
