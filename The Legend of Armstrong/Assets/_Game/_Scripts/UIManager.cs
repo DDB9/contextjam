@@ -34,6 +34,6 @@ public class UIManager : MonoBehaviour
     // Update the sliders
     private void UpdateSliders()
     {
-        jumpChargeSlider.gameObject.SetActive(GameManager.Instance.Player.JumpIsCharging);
+        //jumpChargeSlider.gameObject.SetActive(GameManager.Instance.Player.JumpIsCharging);
     }
 }
