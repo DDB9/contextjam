@@ -43,7 +43,6 @@ public class Projectile : MonoBehaviour
     {
         if (released)
         {
-            Debug.Log(projectileSpeed);
             Initialize(); 
         }
     }

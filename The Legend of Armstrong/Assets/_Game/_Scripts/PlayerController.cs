@@ -21,6 +21,8 @@ public class PlayerController : MonoBehaviour, IDamageable<int>
     public ParticleSystem lightArrowShoot;
     public GameObject jumpDirectionSprite;
     public float jumpChargeShakeIntensity = 1f;
+    public SpriteRenderer characterSpriteRenderer;
+    public Sprite[] characterDirectionSprites;
 
     // Initialize the private variables
     private Rigidbody rb = null;
@@ -40,6 +42,8 @@ public class PlayerController : MonoBehaviour, IDamageable<int>
     private float jumpChargeTimer = 0f;
     private bool jumpIsCharging = false;
     private GameObject projectile;
+    private float characterDirection;
+    private float weaponHandSwapSpeed = 20f;
 
     // Input
     private float inputMove = 0f;
@@ -97,6 +101,7 @@ public class PlayerController : MonoBehaviour, IDamageable<int>
         ReleaseGrapple();
         ToggleEquipment();
         Bomb();
+        SpriteController();
 
         if (!isGrounded)
         {
@@ -143,6 +148,7 @@ public class PlayerController : MonoBehaviour, IDamageable<int>
         inputRelease = Input.GetButtonUp("Fire1");
         inputBomb = Input.GetButtonDown("Bomb");
         inputShield = Input.GetButton("Shield");
+        characterDirection = Vector3.Dot((GameManager.Instance._Cursor.transform.position - transform.position).normalized, transform.right);
     }
 
     // Rotate the aim transform to point towards the mouse cursor
@@ -155,9 +161,14 @@ public class PlayerController : MonoBehaviour, IDamageable<int>
     // Move the player controller along the current surface
     private void Move()
     {
+        Vector3 newVel;
         float step = movementSpeed * Time.deltaTime;
-        Vector3 newVel = transform.right * (inputMove * step);
+        if (!inputJump)
+            newVel = transform.right * (inputMove * step);
+        else
+            newVel = Vector3.zero;
         rb.velocity = Vector3.Lerp(rb.velocity, newVel, movementSmoothing);
+
     }
 
     // Jump towards the mouse cursor
@@ -300,7 +311,23 @@ public class PlayerController : MonoBehaviour, IDamageable<int>
 
         for (int i = 0; i < equipment.Count; i++)
         {
+            float sign = Mathf.Sign(Vector3.Dot((GameManager.Instance._Cursor.transform.position - transform.position).normalized, transform.right));
             equipment[i].gameObject.SetActive(i == equipmentId);
+            if(characterDirection > 0)
+            {
+                if(i == 2)
+                    equipment[i].gameObject.GetComponent<SpriteRenderer>().flipX = false;
+                else
+                    equipment[i].gameObject.GetComponent<SpriteRenderer>().flipY = false;     
+            }
+            else
+            {
+                if (i == 2)
+                    equipment[i].gameObject.GetComponent<SpriteRenderer>().flipX = true;
+                else
+                    equipment[i].gameObject.GetComponent<SpriteRenderer>().flipY = true;
+            }           
+            equipment[i].transform.localPosition = new Vector3(equipment[i].transform.localPosition.x, -sign * Mathf.Abs(equipment[i].transform.localPosition.y), equipment[i].transform.localPosition.z);
         }
     }
 
@@ -317,14 +344,17 @@ public class PlayerController : MonoBehaviour, IDamageable<int>
         }
         if (inputRelease)
         {
-            projectile.transform.parent = null;
-            projectile.GetComponent<Projectile>().ProjectileSpeed = projectileSpeed;
-            projectile.GetComponent<Projectile>().released = true;
-            projectile.transform.GetChild(2).gameObject.SetActive(true);
-            bowDisplayTimer = bowDisplayDuration;
-            shootTimer = shootDelay;
-            projectile = null;
-            lightArrowShoot.Play();
+            if(projectile != null)
+            {
+                projectile.transform.parent = null;
+                projectile.GetComponent<Projectile>().ProjectileSpeed = projectileSpeed;
+                projectile.GetComponent<Projectile>().released = true;
+                projectile.transform.GetChild(2).gameObject.SetActive(true);
+                bowDisplayTimer = bowDisplayDuration;
+                shootTimer = shootDelay;
+                projectile = null;
+                lightArrowShoot.Play();
+            }
         }
 
         bowDisplayTimer -= Time.deltaTime;
@@ -376,5 +406,22 @@ public class PlayerController : MonoBehaviour, IDamageable<int>
         rb.velocity = (direction * step);
 
         groundCheckTimer = groundCheckDelay;
+    }
+
+    public void SpriteController()
+    {
+        if(Mathf.Abs(characterDirection) <= 0.4f)
+            characterSpriteRenderer.sprite = characterDirectionSprites[0];
+        else if(characterDirection > 0.4f)
+        {
+            characterSpriteRenderer.sprite = characterDirectionSprites[1];
+            characterSpriteRenderer.flipX = false;
+        }
+        else
+        {
+            characterSpriteRenderer.sprite = characterDirectionSprites[1];
+            characterSpriteRenderer.flipX = true;
+        }
+
     }
 }

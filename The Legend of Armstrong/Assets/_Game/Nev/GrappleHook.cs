@@ -12,6 +12,7 @@ public class GrappleHook : MonoBehaviour
     public Transform hookShotPos;
     public Rigidbody rb;
     private LineRenderer lineRend;
+    public Transform equipmentPos;
 
     public LayerMask mask;
     public bool useMouseAim;

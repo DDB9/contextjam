@@ -46,13 +46,13 @@ public class CameraManager : MonoBehaviour
         if (angle <= 180f)
         {
             float difference = 1f - (Mathf.Abs(transform.eulerAngles.z - 90f) / 90f);
-            GetComponent<Camera>().orthographicSize = Mathf.Lerp(cameraZoom.x + 0.4f, cameraZoom.y + 0.4f, difference);
+            GetComponent<Camera>().orthographicSize = Mathf.Lerp(cameraZoom.x + 1f, cameraZoom.y + 1f, difference);
         }
         else
         {
             //float difference = 1f - (Mathf.Abs(transform.eulerAngles.z)
             float difference = 1f - (Mathf.Abs((transform.eulerAngles.z - 180f) - 90f) / 90f);
-            GetComponent<Camera>().orthographicSize = Mathf.Lerp(cameraZoom.x + 0.4f, cameraZoom.y + 0.4f, difference);
+            GetComponent<Camera>().orthographicSize = Mathf.Lerp(cameraZoom.x + 1f, cameraZoom.y + 1f, difference);
         }
     }
 
