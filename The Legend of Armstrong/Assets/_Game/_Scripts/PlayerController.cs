@@ -32,7 +32,7 @@ public class PlayerController : MonoBehaviour, IDamageable<int>
     private List<SpriteRenderer> equipment = new List<SpriteRenderer>();
     private int equipmentId = -1;
     private bool isGrappling = false;
-    private int hp = 0;
+    public int hp = 0;
     private int bombs = 3;
     private float jumpChargeTimer = 0f;
     private bool jumpIsCharging = false;
@@ -40,10 +40,10 @@ public class PlayerController : MonoBehaviour, IDamageable<int>
     // Input
     private float inputMove = 0f;
     private bool inputJump = false;
-    private bool inputGrapple = false;
     private bool inputGrappleUp = false;
     private bool inputShoot = false;
     private bool inputBomb = false;
+    private bool inputShield = false;
 
     // Timers
     private float groundCheckTimer = 0f;
@@ -137,6 +137,7 @@ public class PlayerController : MonoBehaviour, IDamageable<int>
         inputGrappleUp = Input.GetButtonUp("Fire2");
         inputShoot = Input.GetButtonDown("Fire1");
         inputBomb = Input.GetButtonDown("Bomb");
+        inputShield = Input.GetButton("Shield");
     }
 
     // Rotate the aim transform to point towards the mouse cursor
@@ -165,7 +166,16 @@ public class PlayerController : MonoBehaviour, IDamageable<int>
                 jumpIsCharging = true;
             }
 
-            jumpChargeTimer = Mathf.Clamp(jumpChargeTimer - Time.deltaTime, 0f, 1f);
+            float shakeIntensity = jumpChargeShakeIntensity * (1f - (jumpChargeTimer / jumpChargeDuration));
+            float newPosX = Random.Range(-shakeIntensity, shakeIntensity);
+            float newPosY = Random.Range(-shakeIntensity, shakeIntensity);
+            transform.Find("Sprite").localPosition = new Vector3(newPosX, newPosY, 0f);
+
+            jumpChargeTimer = jumpChargeTimer - Time.deltaTime;
+        }
+        else
+        {
+            transform.Find("Sprite").localPosition = new Vector3();
         }
 
         if (!inputJump && jumpIsCharging && FindSurface(aimTransform.right))
@@ -202,7 +212,7 @@ public class PlayerController : MonoBehaviour, IDamageable<int>
         if (hitSurface)
         {
             Vector3 dirToPlayer = (rb.position - hit.point).normalized;
-            surfacePosition = hit.point + (dirToPlayer * (playerCollider.height / 2f));
+            surfacePosition = hit.point + (dirToPlayer * ((playerCollider.height * transform.localScale.x) / 2f));
             surfaceRotation = Quaternion.FromToRotation(transform.up, hit.normal) * transform.rotation;
             distanceToSurface = Vector3.Distance(rb.position, surfacePosition);
 
@@ -230,7 +240,7 @@ public class PlayerController : MonoBehaviour, IDamageable<int>
         if (groundCheckTimer <= 0f)
         {
             Vector3 direction = -transform.up;
-            float range = (playerCollider.height / 2f) * 1.25f;
+            float range = ((playerCollider.height * transform.localScale.x) / 2f) * 1.25f;
             LayerMask mask = LayerMask.GetMask("Solid");
             bool hitSurface = (Physics.Raycast(rb.position, direction, range, mask));
 
@@ -270,12 +280,19 @@ public class PlayerController : MonoBehaviour, IDamageable<int>
         }
         else
         {
-            equipmentId = (bowDisplayTimer > 0f) ? 0 : -1;
+            if (inputShield)
+            {
+                equipmentId = 3;
+            }
+            else
+            {
+                equipmentId = (bowDisplayTimer > 0f) ? 0 : 2;
+            }
         }
 
         for (int i = 0; i < equipment.Count; i++)
         {
-            equipment[i].enabled = (i == equipmentId);
+            equipment[i].gameObject.SetActive(i == equipmentId);
         }
     }
 
