@@ -59,8 +59,10 @@ public class CameraManager : MonoBehaviour
     /// <param name="pTargetRoom">Room to move camera to.</param>
     private void PlaceCamera(GameObject pTargetRoom)
     {
-        GetComponent<Camera>().transform.position = Vector2.Lerp(GetComponent<Camera>().transform.position,
-                                                                 pTargetRoom.transform.position,
+        GetComponent<Camera>().transform.position = Vector3.Lerp(GetComponent<Camera>().transform.position,
+                                                                 new Vector3(pTargetRoom.transform.position.x,
+                                                                             pTargetRoom.transform.position.y,
+                                                                             -10),
                                                                  Time.deltaTime * CameraTransitionSpeed);
     }
 }
