@@ -8,7 +8,7 @@ public class Objective : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.transform.CompareTag("Player")
+        if (collision.transform.CompareTag("Player"))
         {
             goal.SetActive(false);
         }

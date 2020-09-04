@@ -3,15 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum EnemyType {STATIC, FLYING, RANGED};
+public enum EnemyType {STATIC, PATROLLING, RANGED};
 [RequireComponent(typeof(Collider))]
 public class Enemy : MonoBehaviour
 {
     public EnemyType enemyType;
     public Animator EnemyAnimator;
-    public GameObject player;
     public GameObject projectile;
-    public Transform[] waypoints;
+    public float fireDelay = 1f;
     public float movementSpeed;
     public bool alerted;
     public bool disablePatrol;
@@ -21,12 +20,22 @@ public class Enemy : MonoBehaviour
     public Transform targetWaypoint;
     [HideInInspector]
     public bool returnToWaypoint;
-
-    private bool _patrolDirectionRight;
+    [HideInInspector]
+    public bool invokeRepeatingOnce;
+    
+    private GameObject _player;
+    private List<Transform> _waypoints = new List<Transform>();
+    private int _waypointIndex = 0;
+    private bool _playAnimationOnce;
 
     private void Start()
     {
-        targetWaypoint = waypoints[0];
+        _player = GameObject.FindWithTag("Player");
+
+        foreach (Transform child in transform.parent.GetChild(1).transform)
+            _waypoints.Add(child);
+
+        targetWaypoint = _waypoints[_waypointIndex];
     }
 
     private void Update()
@@ -38,12 +47,25 @@ public class Enemy : MonoBehaviour
                 else if (returnToWaypoint) ReturnToWaypoint();
                 break;
 
-            case EnemyType.FLYING:
+            case EnemyType.PATROLLING:
+                if (!_playAnimationOnce)
+                {
+                    EnemyAnimator.Play("EnemyMove");
+                    _playAnimationOnce = true;
+                }
                 Patrol();
                 break;
 
             case EnemyType.RANGED:
-                if (alerted) Invoke("FireBullet", 0.1f);
+                if (alerted)
+                {
+                    fireDelay -= Time.deltaTime;
+                    if (fireDelay <= 0)
+                    {
+                        FireBullet();
+                        fireDelay = 1f;
+                    }
+                }
                 else CancelInvoke();
                 break;
         }
@@ -52,8 +74,8 @@ public class Enemy : MonoBehaviour
     private void Patrol()
     {
         // Switch waypoints if enemy has reached a waypoint
-        if (!_patrolDirectionRight && transform.position.x <= targetWaypoint.position.x) SwitchWaypoint();
-        else if (_patrolDirectionRight && transform.position.x >= targetWaypoint.position.x) SwitchWaypoint();
+        if (transform.position == targetWaypoint.position) SwitchWaypoint();
+        else if (transform.position == targetWaypoint.position) SwitchWaypoint();
 
         // Move enemy to target waypoint.
         transform.LookAt(targetWaypoint.position);
@@ -62,22 +84,15 @@ public class Enemy : MonoBehaviour
     }
     private void SwitchWaypoint()
     {
-        // Switch to B if waypoint was A, and vise versa.
-        if (targetWaypoint == waypoints[0])
-        {
-            targetWaypoint = waypoints[1];
-            _patrolDirectionRight = true;
-        }
-        else
-        {
-            targetWaypoint = waypoints[0];
-            _patrolDirectionRight = false;
-        }
+        _waypointIndex++;
+        if (_waypointIndex >= _waypoints.Count) _waypointIndex = 0;
+
+        targetWaypoint = _waypoints[_waypointIndex];
     }
 
     private void ChasePlayer()
     {
-        transform.position = Vector2.MoveTowards(transform.position, player.transform.position, movementSpeed * Time.deltaTime);
+        transform.position = Vector2.MoveTowards(transform.position, _player.transform.position, movementSpeed * Time.deltaTime);
     }
 
     public void ReturnToWaypoint()
@@ -90,7 +105,6 @@ public class Enemy : MonoBehaviour
         }
 
         transform.position = Vector2.MoveTowards(transform.position, targetWaypoint.position, movementSpeed * Time.deltaTime);
-        transform.rotation = Quaternion.Euler(0, 0, 0);
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -102,7 +116,7 @@ public class Enemy : MonoBehaviour
 
     private void FireBullet()
     {
+        EnemyAnimator.Play("EnemyShoot");
         GameObject _bullet = Instantiate(projectile, transform.position, Quaternion.identity);
     }
-
 }

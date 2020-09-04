@@ -45,6 +45,7 @@ GameObject:
   - component: {fileID: 7747489394017163122}
   - component: {fileID: 239703077809330458}
   - component: {fileID: 8266648263767081034}
+  - component: {fileID: 2223434992307124018}
   m_Layer: 0
   m_Name: Unit
   m_TagString: Untagged
@@ -107,7 +108,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 2
   m_Sprite: {fileID: 21300000, guid: 64767efbaa3e8c142913db11d2ad587f, type: 3}
-  m_Color: {r: 0.7169812, g: 0, b: 0.22677699, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -130,18 +131,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyType: 0
-  player: {fileID: 0}
+  EnemyAnimator: {fileID: 2223434992307124018}
   projectile: {fileID: 2449784643193290898, guid: 69917147959e9b64196ee3265b44a23b,
     type: 3}
-  waypoints:
-  - {fileID: 7188889631496962537}
-  - {fileID: 3516819382993583936}
   movementSpeed: 2
   alerted: 0
-  disablePatrol: 0
+  disablePatrol: 1
   ranged: 0
   targetWaypoint: {fileID: 0}
   returnToWaypoint: 0
+  invokeRepeatingOnce: 0
 --- !u!135 &239703077809330458
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -171,6 +170,25 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!95 &2223434992307124018
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3384512211071896325}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 71fbf1097a8ff924b8316c3c22ed97a3, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &3384512212288482708
 GameObject:
   m_ObjectHideFlags: 0
@@ -350,18 +368,6 @@ PrefabInstance:
 --- !u!4 &3683639254890516000 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2154648676057830513, guid: c9652a26f1fca234ca852c4b035f044a,
-    type: 3}
-  m_PrefabInstance: {fileID: 3384512211566090833}
-  m_PrefabAsset: {fileID: 0}
---- !u!4 &7188889631496962537 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 5565361604897528760, guid: c9652a26f1fca234ca852c4b035f044a,
-    type: 3}
-  m_PrefabInstance: {fileID: 3384512211566090833}
-  m_PrefabAsset: {fileID: 0}
---- !u!4 &3516819382993583936 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 2177054412517942545, guid: c9652a26f1fca234ca852c4b035f044a,
     type: 3}
   m_PrefabInstance: {fileID: 3384512211566090833}
   m_PrefabAsset: {fileID: 0}
