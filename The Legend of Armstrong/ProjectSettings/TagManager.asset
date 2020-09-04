@@ -4,7 +4,6 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - Level
   - Flying Enemy Waypoint
   layers:
   - Default
@@ -15,10 +14,10 @@ TagManager:
   - UI
   - 
   - 
+  - Entities
   - CursorCollider
-  - 
-  - 
-  - 
+  - Solid
+  - Projectile
   - 
   - 
   - 
