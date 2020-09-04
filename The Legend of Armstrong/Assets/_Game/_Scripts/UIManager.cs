@@ -7,6 +7,8 @@ public class UIManager : MonoBehaviour
 {
     // Initialize the private variables
     private Slider jumpChargeSlider = null;
+    private Text hpText = null;
+    private Text bombText = null;
 
     public Slider JumpChargeSlider
     {
@@ -22,18 +24,24 @@ public class UIManager : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
-        UpdateSliders();
+        UpdateUI();
     }
 
     // Initialize the UI manager
     private void Initialize()
     {
         jumpChargeSlider = transform.Find("JumpCharge").GetComponent<Slider>();
+        hpText = transform.Find("HP").GetComponentInChildren<Text>();
+        bombText = transform.Find("Bombs").GetComponentInChildren<Text>();
     }
 
     // Update the sliders
-    private void UpdateSliders()
+    private void UpdateUI()
     {
-        //jumpChargeSlider.gameObject.SetActive(GameManager.Instance.Player.JumpIsCharging);
+        jumpChargeSlider.gameObject.SetActive(GameManager.Instance.Player.JumpIsCharging);
+        jumpChargeSlider.value = 1f - (GameManager.Instance.Player.JumpChargeTimer / GameManager.Instance.Player.jumpChargeDuration);
+
+        hpText.text = "HP: " + GameManager.Instance.Player.Hp.ToString() + " / " + GameManager.Instance.Player.maxHp.ToString();
+        bombText.text = "Bombs: " + GameManager.Instance.Player.Bombs.ToString();
     }
 }
